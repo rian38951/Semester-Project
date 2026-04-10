@@ -15,29 +15,37 @@ export default function HomeScreen() {
     { id: "2", text: "Study for exam", completed: false },
   ]);
 
-  // ✅ API state
+  // API state
   const [quote, setQuote] = useState("");
   const [author, setAuthor] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch quote from API
+  // Fetch quote from API
   const fetchQuote = () => {
     setLoading(true);
-    fetch("https://zenquotes.io/api/random")
+
+    fetch("https://api.quotable.io/random")
       .then((res) => res.json())
       .then((data) => {
-        setQuote(data[0].q);
-        setAuthor(data[0].a);
+        if (data && data.content) {
+          setQuote(data.content);
+          setAuthor(data.author);
+        } else {
+          // fallback if API returns weird data
+          setQuote("Stay focused and never give up.");
+          setAuthor("Unknown");
+        }
         setLoading(false);
       })
       .catch(() => {
-        setQuote("Could not load quote.");
-        setAuthor("");
+        // fallback if API fails
+        setQuote("Stay focused and never give up.");
+        setAuthor("Unknown");
         setLoading(false);
       });
   };
 
-  // ✅ Run when app loads
+  // Run on app load
   useEffect(() => {
     fetchQuote();
   }, []);
@@ -55,7 +63,7 @@ export default function HomeScreen() {
       <Text style={globalStyles.title}>SimpleTask</Text>
       <Text style={globalStyles.subtitle}>Your daily task list</Text>
 
-      {/* ✅ Quote Section */}
+      {/* Quote Section */}
       <Text style={{ fontStyle: "italic", color: "#555", marginBottom: 5 }}>
         {loading ? "Loading quote..." : `"${quote}"`}
       </Text>
@@ -64,7 +72,7 @@ export default function HomeScreen() {
         {author ? `- ${author}` : ""}
       </Text>
 
-      {/* ✅ Refresh Button */}
+      {/* Refresh Button */}
       <TouchableOpacity onPress={fetchQuote}>
         <Text style={{ color: "#1976D2", marginBottom: 15 }}>
           Refresh Quote
