@@ -17,24 +17,27 @@ export default function HomeScreen() {
 
   // ✅ API state
   const [quote, setQuote] = useState("");
+  const [author, setAuthor] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // ✅ Function to fetch quote
+  // ✅ Fetch quote from API
   const fetchQuote = () => {
     setLoading(true);
-    fetch("https://api.quotable.io/random")
+    fetch("https://zenquotes.io/api/random")
       .then((res) => res.json())
       .then((data) => {
-        setQuote(data.content);
+        setQuote(data[0].q);
+        setAuthor(data[0].a);
         setLoading(false);
       })
       .catch(() => {
         setQuote("Could not load quote.");
+        setAuthor("");
         setLoading(false);
       });
   };
 
-  // ✅ Run on app load
+  // ✅ Run when app loads
   useEffect(() => {
     fetchQuote();
   }, []);
@@ -42,8 +45,8 @@ export default function HomeScreen() {
   const toggleTask = (id: string) => {
     setTasks(
       tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task,
-      ),
+        task.id === id ? { ...task, completed: !task.completed } : task
+      )
     );
   };
 
@@ -52,9 +55,13 @@ export default function HomeScreen() {
       <Text style={globalStyles.title}>SimpleTask</Text>
       <Text style={globalStyles.subtitle}>Your daily task list</Text>
 
-      {/* ✅ API DISPLAY */}
-      <Text style={{ marginBottom: 10, fontStyle: "italic", color: "#555" }}>
-        {loading ? "Loading quote..." : quote}
+      {/* ✅ Quote Section */}
+      <Text style={{ fontStyle: "italic", color: "#555", marginBottom: 5 }}>
+        {loading ? "Loading quote..." : `"${quote}"`}
+      </Text>
+
+      <Text style={{ color: "#777", marginBottom: 10 }}>
+        {author ? `- ${author}` : ""}
       </Text>
 
       {/* ✅ Refresh Button */}
