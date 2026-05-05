@@ -1,30 +1,16 @@
 import { Link } from "expo-router";
-import { useState } from "react";
 import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 import { globalStyles } from "./globalStyles";
-
-type Task = {
-  id: string;
-  text: string;
-  completed: boolean;
-  image?: string;
-};
+import { toggleTask, useTasks } from "./taskStore";
 
 export default function HomeScreen() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-
-  const toggleTask = (id: string) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task,
-      ),
-    );
-  };
+  const tasks = useTasks();
 
   return (
     <View style={globalStyles.container}>
       <Text style={globalStyles.title}>SimpleTask</Text>
       <Text style={globalStyles.subtitle}>Stay organized every day</Text>
+      <Text style={{ marginBottom: 10, color: "#777" }}>Tap a task to mark it complete </Text>
 
       {tasks.length === 0 ? (
         <Text style={globalStyles.emptyText}>

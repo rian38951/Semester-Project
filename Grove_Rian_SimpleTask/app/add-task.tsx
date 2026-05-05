@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { globalStyles } from "./globalStyles";
+import { addTask } from "./taskStore";
 
 export default function AddTaskScreen() {
   const [task, setTask] = useState("");
@@ -20,7 +21,7 @@ export default function AddTaskScreen() {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permission.granted) {
-      Alert.alert("Permission required to access photos.");
+      Alert.alert("Permission required", "Please allow access to photos.");
       return;
     }
 
@@ -36,17 +37,33 @@ export default function AddTaskScreen() {
 
   const saveTask = () => {
     if (task.trim() === "") {
-      Alert.alert("Please enter a task.");
+      Alert.alert("Error", "Please enter a task.");
       return;
     }
 
-    Alert.alert("Task Saved!");
-    router.push("/");
+    // Save task to global store
+    addTask({
+      id: Date.now().toString(),
+      text: task,
+      completed: false,
+      image: image,
+    });
+
+    // Clear inputs
+    setTask("");
+    setImage(null);
+
+    // Navigate back to Home
+    router.replace("/");
   };
 
   return (
     <View style={globalStyles.container}>
       <Text style={globalStyles.title}>Add a New Task</Text>
+
+      <Text style={{ marginBottom: 10, color: "#555" }}>
+        Enter a task and optionally attach an image.
+      </Text>
 
       <TextInput
         style={globalStyles.input}
@@ -62,7 +79,12 @@ export default function AddTaskScreen() {
       {image && (
         <Image
           source={{ uri: image }}
-          style={{ width: "100%", height: 150, marginTop: 15 }}
+          style={{
+            width: "100%",
+            height: 150,
+            marginTop: 15,
+            borderRadius: 8,
+          }}
         />
       )}
 
