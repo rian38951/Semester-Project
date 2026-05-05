@@ -21,32 +21,43 @@ export const globalStyles = StyleSheet.create({
   card: {
     backgroundColor: "white",
     padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
+    borderRadius: 10,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
 
   button: {
     backgroundColor: "#1976D2",
     padding: 15,
-    borderRadius: 8,
+    borderRadius: 10,
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 15,
   },
 
   buttonText: {
     color: "white",
     fontWeight: "bold",
+    fontSize: 16,
   },
 
   input: {
     backgroundColor: "white",
     padding: 15,
-    borderRadius: 8,
-    marginBottom: 20,
+    borderRadius: 10,
+    marginBottom: 15,
   },
 
   completed: {
     textDecorationLine: "line-through",
     color: "gray",
+  },
+
+  emptyText: {
+    textAlign: "center",
+    marginTop: 40,
+    color: "#777",
   },
 });

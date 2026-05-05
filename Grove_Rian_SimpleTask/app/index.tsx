@@ -1,118 +1,74 @@
 import { Link } from "expo-router";
-import { useEffect, useState } from "react";
-import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import { useState } from "react";
+import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 import { globalStyles } from "./globalStyles";
 
 type Task = {
   id: string;
   text: string;
   completed: boolean;
+  image?: string;
 };
 
 export default function HomeScreen() {
-  const [tasks, setTasks] = useState<Task[]>([
-    { id: "1", text: "Finish homework", completed: false },
-    { id: "2", text: "Study for exam", completed: false },
-  ]);
-
-  // API state
-  const [quote, setQuote] = useState("");
-  const [author, setAuthor] = useState("");
-  const [loading, setLoading] = useState(true);
-
-  // Fetch quote from API
-  const fetchQuote = () => {
-    setLoading(true);
-
-    fetch("https://api.quotable.io/random")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.content) {
-          setQuote(data.content);
-          setAuthor(data.author);
-        } else {
-          // fallback if API returns weird data
-          setQuote("Stay focused and never give up.");
-          setAuthor("Unknown");
-        }
-        setLoading(false);
-      })
-      .catch(() => {
-        // fallback if API fails
-        setQuote("Stay focused and never give up.");
-        setAuthor("Unknown");
-        setLoading(false);
-      });
-  };
-
-  // Run on app load
-  useEffect(() => {
-    fetchQuote();
-  }, []);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   const toggleTask = (id: string) => {
     setTasks(
       tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
+        task.id === id ? { ...task, completed: !task.completed } : task,
+      ),
     );
   };
 
   return (
     <View style={globalStyles.container}>
       <Text style={globalStyles.title}>SimpleTask</Text>
-      <Text style={globalStyles.subtitle}>Your daily task list</Text>
+      <Text style={globalStyles.subtitle}>Stay organized every day</Text>
 
-      {/* Quote Section */}
-      <Text style={{ fontStyle: "italic", color: "#555", marginBottom: 5 }}>
-        {loading ? "Loading quote..." : `"${quote}"`}
-      </Text>
-
-      <Text style={{ color: "#777", marginBottom: 10 }}>
-        {author ? `- ${author}` : ""}
-      </Text>
-
-      {/* Refresh Button */}
-      <TouchableOpacity onPress={fetchQuote}>
-        <Text style={{ color: "#1976D2", marginBottom: 15 }}>
-          Refresh Quote
+      {tasks.length === 0 ? (
+        <Text style={globalStyles.emptyText}>
+          No tasks yet. Tap "Add Task" to get started!
         </Text>
-      </TouchableOpacity>
+      ) : (
+        <FlatList
+          data={tasks}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={globalStyles.card}
+              onPress={() => toggleTask(item.id)}
+            >
+              <Text style={item.completed ? globalStyles.completed : undefined}>
+                {item.completed ? "✔ " : ""}
+                {item.text}
+              </Text>
 
-      <FlatList
-        data={tasks}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={globalStyles.card}
-            onPress={() => toggleTask(item.id)}
-          >
-            <Text style={item.completed ? globalStyles.completed : undefined}>
-              {item.completed ? "✔ " : ""}
-              {item.text}
-            </Text>
-          </TouchableOpacity>
-        )}
-      />
-
-      {/* Optional empty state */}
-      {tasks.length === 0 && (
-        <Text style={{ textAlign: "center", marginTop: 20 }}>
-          No tasks yet. Add one!
-        </Text>
+              {item.image && (
+                <Image
+                  source={{ uri: item.image }}
+                  style={{
+                    width: "100%",
+                    height: 150,
+                    marginTop: 10,
+                    borderRadius: 8,
+                  }}
+                />
+              )}
+            </TouchableOpacity>
+          )}
+        />
       )}
 
       <Link href="/add-task" asChild>
         <TouchableOpacity style={globalStyles.button}>
-          <Text style={globalStyles.buttonText}>Add Task</Text>
+          <Text style={globalStyles.buttonText}>+ Add Task</Text>
         </TouchableOpacity>
       </Link>
 
       <Link href="/info" asChild>
         <TouchableOpacity style={{ marginTop: 10, alignItems: "center" }}>
-          <Text style={{ color: "#1976D2", fontWeight: "bold" }}>
-            App Info
-          </Text>
+          <Text>App Info</Text>
         </TouchableOpacity>
       </Link>
     </View>
